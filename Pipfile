@@ -5,6 +5,7 @@ verify_ssl = true
 
 [dev-packages]
 ansible-lint = "*"
+ansible = "==2.9.7"
 
 [packages]
 ansible = "==2.9.7"
