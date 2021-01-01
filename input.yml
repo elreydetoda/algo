@@ -81,6 +81,8 @@
           - (ondemand_wifi|default(false)|bool) or
             (booleans_map[_ondemand_wifi.user_input|default(omit)]|default(false))
 
+      - debug:
+          var: store_pki
       - name: Retain the PKI prompt
         pause:
           prompt: |
@@ -106,6 +108,9 @@
             [y/N]
         register: _ssh_tunneling
         when: ssh_tunneling is undefined
+
+      - debug:
+          var: _store_pki
 
       - name: Set facts based on the input
         set_fact:
@@ -137,8 +142,11 @@
             {%- elif _ssh_tunneling.user_input is defined %}{{ booleans_map[_ssh_tunneling.user_input] | default(defaults['ssh_tunneling']) }}
             {%- else %}false{% endif %}
           algo_store_pki: >-
-            {% if ipsec_enabled %}{%- if store_pki is defined %}{{ store_pki | bool }}
+            {% if ( ipsec_enabled ) or ( store_pki is defined ) %}{%- if store_pki is defined %}{{ store_pki | bool }}
             {%- elif _store_pki.user_input is defined  %}{{ booleans_map[_store_pki.user_input] | default(defaults['store_pki']) }}
             {%- else %}false{% endif %}{% endif %}
       rescue:
         - include_tasks: playbooks/rescue.yml
+
+    - debug:
+        var: algo_store_pki
